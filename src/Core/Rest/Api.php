@@ -114,12 +114,12 @@ class Api
      */
     public function execute($uri, $opts = array(),$params=[])
     {
-        if (!empty($params)) {
-            $uri = $this->buildUrl($uri,$params);
-        }
         $parse_url = parse_url($uri);
         if (!isset($parse_url["scheme"])) {
             $uri = $this->base_ws . $uri;
+        }
+        if (!empty($params)) {
+            $uri = $this->buildUrl($uri,$params);
         }
         $curl = curl_init($uri);
         curl_setopt_array($curl, $this->curl_opts_default);
