@@ -1,0 +1,20 @@
+{
+    "name":"jad21/V2Core",
+    "description":"Module Core V2",
+    "authors": [
+        {
+            "name": "Jose Angel Delgado",
+            "email": "esojangel@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Core\\": "src/Core"
+        },
+        "classmap":[],
+        "files": [
+            "src/Core/Debug/ErrorHandler.php",
+            "src/Core/Utils/helpers.php"
+        ]
+    }
+}
