@@ -1,5 +1,5 @@
 <?php
-namespace App\Core;
+namespace V2\Core;
 use V2\Core\Http\Request;
 use V2\Core\Http\Response;
 use V2\Core\Http\Headers;
