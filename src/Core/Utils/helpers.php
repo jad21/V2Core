@@ -178,7 +178,7 @@ if (!function_exists('is_not_null')) {
     }
 }
 if (!function_exists('env')) {
-    function env($file=null)
+    function env($file = null)
     {
         return Env::getData($file);
     }
@@ -210,3 +210,24 @@ if (!function_exists('result')) {
     }
 }
 
+if (!function_exists('ex')) {
+    function ex($arg)
+    {
+        exit($arg);
+    }
+}
+
+/**
+ * Verificar que no este seteado
+ *
+ * @access    public
+ * @param    mixed
+ * @return    bool
+ */
+
+if (!function_exists('isnotset')) {
+    function isnotset($arg)
+    {
+        return !isset($arg);
+    }
+}

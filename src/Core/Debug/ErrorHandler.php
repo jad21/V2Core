@@ -16,6 +16,10 @@ class ErrorHandler extends Exception
     {
         return $this->severity;
     }
+    public function register()
+    {
+        
+    }
 }
 
 function exception_error_handler($errno, $errstr, $errfile, $errline)
@@ -35,7 +39,10 @@ if (!function_exists('ErrorHandlerFaltal')) {
      */
     function ErrorHandlerFaltal($e)
     {
-        header('HTTP/1.1 500 Error Server');
+        if(function_exists('header')){
+            header('HTTP/1.1 500 Error Server');
+            header('Content-Type: application/json');
+        }
         $body_exception =
         $e->getMessage() . " " .
         $e->getFile() . ":" . $e->getLine() . " \n" .
@@ -46,7 +53,7 @@ if (!function_exists('ErrorHandlerFaltal')) {
             $code = "ERROREXCEPTIONFATAL"
             );
         echo $response_str;
-        Logger::error($body_exception,"exception.log");
+        Logger::error($body_exception,"exception");
         exit();
     }
 }

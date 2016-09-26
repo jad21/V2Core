@@ -24,8 +24,13 @@ class Env
 		return self::$setting[$file];
 	}
 	public function getDataFile(){
+		$path_extension = strtolower(pathinfo($this->configfile, PATHINFO_EXTENSION));
+		if (empty($path_extension) OR $path_extension == "") {
+			$path_extension = "xml";
+			$this->configfile .= ".".$path_extension;
+		}
 		if (file_exists($this->configfile)){
-            switch (strtolower(pathinfo($this->configfile, PATHINFO_EXTENSION))) {
+            switch ($path_extension) {
             	case 'xml':
             		$data = simplexml_load_file($this->configfile);
             		break;
