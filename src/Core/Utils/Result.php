@@ -7,10 +7,15 @@ class Result
     public $msg   = "";
     public $error = false;
     public $data  = [];
-    public function __construct($data, $msg, $code, $error)
+    public function __construct()
     {
         if (func_num_args()==4) {
-            $this->make($data, $msg, $code, $error);
+            $this->make(
+                $data = func_get_args()[0], 
+                $msg = func_get_args()[1], 
+                $code = func_get_args()[2], 
+                $error = func_get_args()[3]
+            );
         }
     }
     public function make($data, $msg, $code, $error){
