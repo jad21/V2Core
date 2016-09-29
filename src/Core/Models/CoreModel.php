@@ -76,7 +76,7 @@ abstract class CoreModel
         $bindings = $this->variables;
         if (!empty($bindings)) {
             $fields     = array_keys($bindings);
-            $fieldsvals = array( "`".implode("`,`", $fieldsp)."`" , ":" . implode(",:", $fields));
+            $fieldsvals = array( "`".implode("`,`", $fields)."`" , ":" . implode(",:", $fields));
             $sql        = "INSERT INTO " . $this->table . " (" . $fieldsvals[0] . ") VALUES (" . $fieldsvals[1] . ")";
         } else {
             throw new Exception("No hay valores para crear en " . get_class($this), -3);
