@@ -217,17 +217,3 @@ if (!function_exists('ex')) {
     }
 }
 
-/**
- * Verificar que no este seteado
- *
- * @access    public
- * @param    mixed
- * @return    bool
- */
-
-if (!function_exists('isnotset')) {
-    function isnotset($arg)
-    {
-        return !isset($arg);
-    }
-}
