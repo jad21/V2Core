@@ -48,6 +48,7 @@ class DB {
     public function CloseConnection()
     {
         $this->pdo = null;
+        $this->bConnected = false;
     }
     /**
      *  Every method which needs to execute a SQL query uses this method.
@@ -104,6 +105,15 @@ class DB {
             $this->parameters = array();
         }
         catch (PDOException $e) {
+            $trace = explode(":",$e->getMessage());
+            // si => SQLSTATE[HY000]: General error: 2006 MySQL server has gone away
+            if (sizeof($trace)>3) {
+                $SQLSTATE = trim(substr($trace[2],0,6));
+                #si se agoto el tiempo de la conexio, reconectar
+                if ($SQLSTATE == "2006") {
+                    $this->CloseConnection();
+                }
+            }
             throw new ErrorHandler($e->getMessage().".\n sql:{$query}.","PDOEXCEPTION",-2,$e);
         }
         
