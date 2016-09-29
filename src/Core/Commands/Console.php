@@ -22,7 +22,7 @@ class Console extends ApplicationBase
 	}
 	private static function init()
 	{
-		self::$intance = new self("App Console <autor: Jose Angel Delgado>", "0.1");
+		self::$intance = new self("App Console \n <comment>author: Jose Angel Delgado <info><esojangel@gmail.com><info> </comment>\n", "0.1");
 		// ... register commands
 		$list_commands = self::$intance->getClassCommands();
 		foreach ($list_commands as $class) {

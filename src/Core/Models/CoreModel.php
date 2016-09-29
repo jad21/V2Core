@@ -44,7 +44,7 @@ abstract class CoreModel
         $columns                             = array_keys($this->variables);
         foreach ($columns as $column) {
             if ($column !== $this->primary_key) {
-                $fieldsvals .= $column . " = :" . $column . ",";
+                $fieldsvals .= "`".$column."`" . " = :" . $column . ",";
             }
 
         }
@@ -76,10 +76,10 @@ abstract class CoreModel
         $bindings = $this->variables;
         if (!empty($bindings)) {
             $fields     = array_keys($bindings);
-            $fieldsvals = array(implode(",", $fields), ":" . implode(",:", $fields));
+            $fieldsvals = array( "`".implode("`,`", $fieldsp)."`" , ":" . implode(",:", $fields));
             $sql        = "INSERT INTO " . $this->table . " (" . $fieldsvals[0] . ") VALUES (" . $fieldsvals[1] . ")";
         } else {
-            throw new Exception("No hay valores para crear en " . self::class, -3);
+            throw new Exception("No hay valores para crear en " . get_class($this), -3);
         }
         return $this->exec($sql);
     }

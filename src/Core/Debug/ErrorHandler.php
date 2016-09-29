@@ -1,36 +1,91 @@
 <?php
+
+use V2\Core\Logs\Logger;
+use V2\Core\Utils\Result;
+
 class ErrorHandler extends Exception
 {
     protected $severity;
-
-    public function __construct($message, $code, $severity, $filename, $lineno)
+    protected $code_error;
+    public function __construct($message,$code_error = "ERROREXCEPTIONFATAL",$code = 1, Exception $previous = null)
     {
         $this->message  = $message;
+        $this->code_error  = $code_error;
         $this->code     = $code;
-        $this->severity = $severity;
-        $this->file     = $filename;
-        $this->line     = $lineno;
+        $this->previous     = $previous;
     }
-
+    public function setSeverity($value)
+    {
+        $this->severity = $value;
+    }
+    public function setFile($value)
+    {
+        $this->file = $value;
+    }
+    public function setLine($value)
+    {
+        $this->line = $value;
+    }
+    
+    public function getCodeError()
+    {
+        return $this->code_error;
+    }
+    public function isNotNullCodeError()
+    {
+        return !is_null($this->code_error);
+    }
+    
     public function getSeverity()
     {
         return $this->severity;
     }
-    public function register()
+    public static function register()
     {
-        
+        set_error_handler("ErrorHandler::exception_error_handler", E_ALL);        
+        set_exception_handler("ErrorHandler::exception_handler");
     }
+    public static function exception_error_handler($errno, $errstr, $errfile, $errline)
+    {
+        $e = new self($errstr);   
+        $e->setSeverity($errno);
+        $e->setFile($errfile);
+        $e->setLine($errline);
+        throw $e;
+    }
+    public static function exception_handler($e)
+    {
+        self::render($e);
+    }
+    public static function render($e)
+    {
+        if(function_exists('header')){
+            header('HTTP/1.1 500 Error Server');
+            header('Content-Type: application/json');
+        }
+        $body_exception =
+            $e->getMessage() . " " .
+            $e->getFile() . ":" . $e->getLine() . " \n" .
+            $e->getTraceAsString();
+        $code = "ERROREXCEPTIONFATAL::". get_class($e);
+        if ($e instanceof self AND $e->isNotNullCodeError()) {
+            $code = $e->getCodeError();
+        }
+        $response_str = Result::error(
+            $e->getMessage(),
+            [ 
+                "file"=>$e->getFile() . ":" . $e->getLine(),
+                "trace"=>explode(PHP_EOL,$body_exception) 
+            ],
+            $code
+        );
+        echo (string)$response_str;
+        Logger::error($body_exception,"exception");
+        die();
+    }
+
 }
 
-function exception_error_handler($errno, $errstr, $errfile, $errline)
-{
-    throw new ErrorHandler($errstr, 0, $errno, $errfile, $errline);
-}
-set_error_handler("exception_error_handler", E_ALL);
-
-
-use V2\Core\Logs\Logger;
-use V2\Core\Utils\Result;
 if (!function_exists('ErrorHandlerFaltal')) {
     /**
      *      helpers para manejar los errores fatales
@@ -39,24 +94,8 @@ if (!function_exists('ErrorHandlerFaltal')) {
      */
     function ErrorHandlerFaltal($e)
     {
-        if(function_exists('header')){
-            header('HTTP/1.1 500 Error Server');
-            header('Content-Type: application/json');
-        }
-        $body_exception =
-        $e->getMessage() . " " .
-        $e->getFile() . ":" . $e->getLine() . " \n" .
-        $e->getTraceAsString();
-        $response_str = Result::error(
-            $e->getMessage(),
-            [ "trace"=>explode(PHP_EOL,$body_exception) ],
-            $code = "ERROREXCEPTIONFATAL"
-            );
-        echo $response_str;
-        Logger::error($body_exception,"exception");
-        exit();
+        ErrorHandler::render($e);
     }
 }
-set_exception_handler(function ($e) {
-    ErrorHandlerFaltal($e);
-});
+
+ErrorHandler::register();

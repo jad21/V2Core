@@ -36,7 +36,6 @@ class Application
                 break;
         }
 
-
         /**
          * Route the request.
          */
@@ -82,7 +81,9 @@ class Application
             $action_name  = strtolower($method_name);
             if(method_exists($controller, $action_name)){
                 try {
+                    $controller->__middleware("before",$request);
                     $response_str = call_user_func_array(array($controller, $action_name), $arguments_method);
+                    $controller->__middleware("after",$request);
                 } catch (Exception $e) {
                     throw $e;
                 }

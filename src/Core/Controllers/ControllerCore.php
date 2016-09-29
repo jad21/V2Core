@@ -2,6 +2,7 @@
 
 namespace V2\Core\Controllers;
 use V2\Core\Views\View;
+use V2\Core\Http\Request;
 class ControllerCore
 {
 	protected $parameters = [];
@@ -25,6 +26,16 @@ class ControllerCore
 		header('HTTP/1.1 500 Error Server');
 		return $value;
 	}
+	public final function __middleware($name,Request $request)
+	{
+		if (method_exists($this, $name)) {
+			$this->{$name}($request);
+		}
+	}
+
+	protected function before($request) {}
+	protected function after($request) {}
+
 	public function setParameters($parameters)
 	{
 		$this->parameters = $parameters;

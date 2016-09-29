@@ -104,7 +104,7 @@ class DB {
             $this->parameters = array();
         }
         catch (PDOException $e) {
-            throw new Exception($e->getMessage().".\n sql:{$query}.",1,$e);
+            throw new ErrorHandler($e->getMessage().".\n sql:{$query}.","PDOEXCEPTION",-2,$e);
         }
         
     }  
