@@ -78,20 +78,23 @@ class ErrorHandler extends Exception
             $e->getFile() . ":" . $e->getLine() . " \n" .
             $e->getTraceAsString();
         $code = "ERROREXCEPTIONFATAL::". get_class($e);
-        $data = [];
         if ($e instanceof self AND $e->isNotNullCodeError()) {
             $code = $e->getCodeError();
-            $data = $e->getData();
         }
         $response_str = Result::error(
             $e->getMessage(),
             [ 
                 "file"=>$e->getFile() . ":" . $e->getLine(),
                 "trace"=>explode(PHP_EOL,$body_exception),
-                "data"=>$data
             ],
             $code
         );
+        if ($e instanceof self AND $e->isNotNullCodeError()) {
+            $data = $e->getData();
+            if (!empty($data)) {
+                $response_str->setData("data",$data);
+            }
+        }
         echo (string)$response_str;
         Logger::error($body_exception,"exception");
         die();
