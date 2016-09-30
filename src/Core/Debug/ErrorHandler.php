@@ -89,7 +89,7 @@ class ErrorHandler extends Exception
             ],
             $code
         );
-        if ($e instanceof self AND $e->isNotNullCodeError()) {
+        if ($e instanceof self) {
             $data = $e->getData();
             if (!empty($data)) {
                 $response_str->setData("data",$data);
