@@ -13,6 +13,7 @@ class ErrorHandler extends Exception
         $this->code_error  = $code_error;
         $this->code     = $code;
         $this->previous     = $previous;
+        $this->data     = [];
     }
     public function setSeverity($value)
     {
@@ -25,6 +26,15 @@ class ErrorHandler extends Exception
     public function setLine($value)
     {
         $this->line = $value;
+    }
+    public function setData($data)
+    {
+        $this->data = $data;
+        return $this;
+    }
+    public function getData()
+    {
+        return $this->data;
     }
     
     public function getCodeError()
@@ -68,14 +78,17 @@ class ErrorHandler extends Exception
             $e->getFile() . ":" . $e->getLine() . " \n" .
             $e->getTraceAsString();
         $code = "ERROREXCEPTIONFATAL::". get_class($e);
+        $data = [];
         if ($e instanceof self AND $e->isNotNullCodeError()) {
             $code = $e->getCodeError();
+            $data = $e->getData();
         }
         $response_str = Result::error(
             $e->getMessage(),
             [ 
                 "file"=>$e->getFile() . ":" . $e->getLine(),
-                "trace"=>explode(PHP_EOL,$body_exception) 
+                "trace"=>explode(PHP_EOL,$body_exception),
+                "data"=>$data
             ],
             $code
         );
