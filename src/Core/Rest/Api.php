@@ -5,15 +5,17 @@ class Api
 {
     const RESPONSE_TYPE_JSON = "json";
     const RESPONSE_TYPE_RAW  = "html";
-    const ENCODING_JSON  = "json";
-    const ENCODING_QUERY   = "html";
+    const ENCODING_JSON      = "json";
+    const ENCODING_QUERY     = "html";
 
     /**
      * Base del WebService
      *
      * @author  Jose Angel Delgado
      */
-    protected $base_ws    = "";
+    protected $base_ws = "";
+    #@int seconds for timeout
+    protected $timeout    = 3000;
     private $headers      = [];
     private $responseType = self::RESPONSE_TYPE_JSON;
     private $requestType  = self::ENCODING_JSON;
@@ -25,18 +27,14 @@ class Api
      * Configuration for CURL
      */
     private $curl_opts_default = [
-        CURLOPT_USERAGENT      => "YAXA-REST-1.0.0",
+        CURLOPT_USERAGENT      => "V2-REST-1.0.0",
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => false,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
     ];
 
-    public function __construct()
-    {
-        /*set limit for el curl*/
-        set_time_limit(3000);
-    }
     /**
      * Method Get HTTP
      *
@@ -45,35 +43,31 @@ class Api
      * @return string reponseCurl
      */
 
-    public function get($methodURl = '', $data = [])
+    public function get($methodURl = '', $params = [])
     {
-        $parse_url = parse_url($methodURl);
-        if (!isset($parse_url["scheme"])) {
-            $methodURl = $this->base_ws . $methodURl;
-        }
-        $url = $this->buildUrl($methodURl, $data);
-        return $this->handle($url, "GET");
+        return $exec = $this->execute($methodURl, null, $params);
+        // return $this->handle($url);
     }
-    public function delete($methodURl = '', $data = [])
+    public function delete($methodURl = '', $params = [])
     {
-        $parse_url = parse_url($methodURl);
-        if (!isset($parse_url["scheme"])) {
-            $methodURl = $this->base_ws . $methodURl;
-        }
-        $url = $this->buildUrl($methodURl, $data);
-        return $this->handle($url, "DELETE");
+        $opts = array(
+            CURLOPT_CUSTOMREQUEST => "DELETE",
+        );
+        $exec = $this->execute($url, $opts, $params);
+        return $exec;
+
+        // return $this->handle($methodURl, "DELETE");
     }
 
-
-    public function post($methodURl = '', $data = [],$params=[],$requestType = self::ENCODING_JSON)
+    public function post($methodURl = '', $data = [], $params = [], $requestType = self::ENCODING_JSON)
     {
         $parse_url = parse_url($methodURl);
         if (!isset($parse_url["scheme"])) {
             $url = $this->base_ws . $methodURl;
-        }else{
+        } else {
             $url = $methodURl;
         }
-        if($requestType == self::ENCODING_JSON){
+        if ($requestType == self::ENCODING_JSON) {
             $this->setHeader('Content-Type', 'application/json');
             $data = json_encode($data);
         }
@@ -81,12 +75,12 @@ class Api
             CURLOPT_POST       => true,
             CURLOPT_POSTFIELDS => $data,
         );
-        return $exec = $this->execute($url, $opts,$params);
+        return $exec = $this->execute($url, $opts, $params);
         // return $this->handle($url,"POST",$data);
     }
-    public function put($url = '', $data = [],$params=[],$requestType = self::ENCODING_JSON)
+    public function put($url = '', $data = [], $params = [], $requestType = self::ENCODING_JSON)
     {
-        if($requestType == self::ENCODING_JSON){
+        if ($requestType == self::ENCODING_JSON) {
             $this->setHeader('Content-Type', 'application/json');
         }
         $body = json_encode($data);
@@ -94,8 +88,8 @@ class Api
             CURLOPT_CUSTOMREQUEST => "PUT",
             CURLOPT_POSTFIELDS    => $body,
         );
-        
-        $exec = $this->execute($url, $opts,$params);
+
+        $exec = $this->execute($url, $opts, $params);
         return $exec;
     }
 
@@ -110,6 +104,8 @@ class Api
     public function handle($url, $method = null)
     {
         try {
+            /*set limit for el curl*/
+            set_time_limit($this->timeout);
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
@@ -151,10 +147,11 @@ class Api
      * @param array $opts
      * @return mixed
      */
-    public function execute($uri, $opts = array(),$params=[])
+    public function execute($uri, $opts = array(), $params = [])
     {
+        set_time_limit($this->timeout);
         if (!empty($params)) {
-            $uri = $this->buildUrl($uri,$params);
+            $uri = $this->buildUrl($uri, $params);
         }
         $parse_url = parse_url($uri);
         if (!isset($parse_url["scheme"])) {
@@ -169,9 +166,11 @@ class Api
 
         $return             = curl_exec($curl);
         $this->lastHttpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $err = curl_error($curl);
+        $err                = curl_error($curl);
         if ($err) {
-            throw new \Exception("Exception CURL to { {$uri} } ERROR:".$err, -5);
+            $error = new \Error($err . " to { {$uri} }", "ERROR:CURL");
+            $error->setData("url", $uri);
+            throw $error;
         }
         curl_close($curl);
 
