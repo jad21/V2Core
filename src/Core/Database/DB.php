@@ -111,7 +111,7 @@ class DB {
         catch (PDOException $e) {
             $trace = explode(":",$e->getMessage());
             // si => SQLSTATE[HY000]: General error: 2006 MySQL server has gone away
-            $error = new ErrorHandler($e->getMessage(),"PDOEXCEPTION",$this->code_errors["parse",$e);
+            $error = new ErrorHandler($e->getMessage(),"PDOEXCEPTION",$this->code_errors["parse"],$e);
             $error->setData("query",$query);
             if (sizeof($trace)>3) {
                 $SQLSTATE = trim(substr($trace[2],0,6));
