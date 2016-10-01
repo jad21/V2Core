@@ -4,7 +4,6 @@ namespace V2\Core\Cache;
 abstract class Cache
 {
     protected static $directory = VAR_DIRECTORY . "cache";
-
     public static function put($key, $value)
     {
         if (!is_dir(self::$directory)) {
