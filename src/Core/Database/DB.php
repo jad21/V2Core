@@ -16,6 +16,10 @@ class DB {
     # @string, name conection
     private $name = null;
 
+    protected $code_errors = [
+        "timeout"=>2006,
+        "parse"=>2000,
+    ];
     public function __construct($name = null) {
         $this->name = $name;
         // $this->Connect();
@@ -107,14 +111,19 @@ class DB {
         catch (PDOException $e) {
             $trace = explode(":",$e->getMessage());
             // si => SQLSTATE[HY000]: General error: 2006 MySQL server has gone away
+            $error = new ErrorHandler($e->getMessage(),"PDOEXCEPTION",$this->code_errors["parse",$e);
+            $error->setData("query",$query);
             if (sizeof($trace)>3) {
                 $SQLSTATE = trim(substr($trace[2],0,6));
                 #si se agoto el tiempo de la conexio, reconectar
-                if ($SQLSTATE == "2006") {
+                if (in_array($SQLSTATE,["2006","2013"]) ) {
                     $this->CloseConnection();
                 }
+                $error
+                    ->setCode($this->code_errors["timeout"])
+                    ->setCodeError("PDOEXCEPTIONTIMEOUT");
             }
-            throw new ErrorHandler($e->getMessage().".\n sql:{$query}.","PDOEXCEPTION",-2,$e);
+            throw $error;
         }
         
     }  

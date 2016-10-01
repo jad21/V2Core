@@ -212,9 +212,14 @@ abstract class CoreModel
 
         return $this;
     }
-    public function first()
+    public function first($select=[])
     {
-        $sql           = "SELECT * FROM {$this->table} WHERE 1 ";
+        if (is_array($select) AND sizeof($select)>0) {
+            $select = "`".implode("`",$select)."`";
+        }else{
+            $select = "*";
+        }
+        $sql           = "SELECT {$select} FROM {$this->table} WHERE 1 ";
         $_query_filter = "";
         $bindParams    = [];
         $cont = 0;
@@ -232,9 +237,14 @@ abstract class CoreModel
         }
         return null;
     }
-    public function get()
+    public function get($select=[])
     {
-        $sql           = "SELECT * FROM {$this->table} WHERE 1 ";
+        if (is_array($select) AND sizeof($select)>0) {
+            $select = "`".implode("`",$select)."`";
+        }else{
+            $select = "*";
+        }
+        $sql           = "SELECT {$select} FROM {$this->table} WHERE 1 ";
         $_query_filter = "";
         $bindParams    = [];
         $cont = 0;
