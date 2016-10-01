@@ -27,9 +27,15 @@ class ErrorHandler extends Exception
     {
         $this->line = $value;
     }
-    public function setData($data)
+    public function setData($key,$value=null)
     {
-        $this->data = $data;
+        if (is_null($value)) {
+            $this->data = $key;
+        }else{
+            if (is_array($this->data)) {
+                $this->data[$key] = $value;
+            }
+        }
         return $this;
     }
     public function getData()
@@ -101,6 +107,8 @@ class ErrorHandler extends Exception
     }
 
 }
+
+class Error extends ErrorHandler {}
 
 if (!function_exists('ErrorHandlerFaltal')) {
     /**
