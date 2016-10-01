@@ -108,8 +108,6 @@ class ErrorHandler extends Exception
 
 }
 
-class Error extends ErrorHandler {}
-
 if (!function_exists('ErrorHandlerFaltal')) {
     /**
      *      helpers para manejar los errores fatales

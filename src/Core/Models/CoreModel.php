@@ -219,7 +219,7 @@ abstract class CoreModel
         $bindParams    = [];
         $cont = 0;
         foreach ($this->_query_filter as $ikey => $ivalue) {
-            $_query_filter .= " {$ivalue['operador']} {$this->table}.{$ivalue['key']}{$ivalue['cond']} :{$cont}{$ivalue['key']} ";
+            $_query_filter .= " {$ivalue['operador']} {$this->table}.`{$ivalue['key']}`{$ivalue['cond']} :{$cont}{$ivalue['key']} ";
             $bindParams[$cont.$ivalue['key']] = $ivalue['val'];
             $cont++;
         }
@@ -239,7 +239,7 @@ abstract class CoreModel
         $bindParams    = [];
         $cont = 0;
         foreach ($this->_query_filter as $ikey => $ivalue) {
-            $_query_filter .= " {$ivalue['operador']} {$this->table}.{$ivalue['key']}{$ivalue['cond']} :{$cont}{$ivalue['key']} ";
+            $_query_filter .= " {$ivalue['operador']} {$this->table}.`{$ivalue['key']}`{$ivalue['cond']} :{$cont}{$ivalue['key']} ";
             $bindParams["{$cont}{$ivalue['key']}"] = $ivalue['val'];
             $cont++;
         }
