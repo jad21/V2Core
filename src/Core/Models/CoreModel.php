@@ -134,12 +134,9 @@ abstract class CoreModel
         }
 
     }
-    public function count($field)
+    public function count()
     {
-        if ($field) {
-            return $this->db->single("SELECT count(" . $field . ")" . " FROM " . $this->table);
-        }
-
+        return $this->db->single("SELECT count(1)" . " FROM " . $this->table);
     }
 
     /**
@@ -215,7 +212,7 @@ abstract class CoreModel
     public function first($select=[])
     {
         if (is_array($select) AND sizeof($select)>0) {
-            $select = "`".implode("`",$select)."`";
+            $select = "`".implode("`,`",$select)."`";
         }else{
             $select = "*";
         }
@@ -240,7 +237,7 @@ abstract class CoreModel
     public function get($select=[])
     {
         if (is_array($select) AND sizeof($select)>0) {
-            $select = "`".implode("`",$select)."`";
+            $select = "`".implode("`,`",$select)."`";
         }else{
             $select = "*";
         }
