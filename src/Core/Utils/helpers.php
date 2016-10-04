@@ -217,3 +217,9 @@ if (!function_exists('ex')) {
     }
 }
 
+if (!function_exists('not')) {
+    function not($arg)
+    {
+        return !($arg);
+    }
+}
