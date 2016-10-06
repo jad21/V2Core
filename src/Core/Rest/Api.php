@@ -168,7 +168,7 @@ class Api
         $this->lastHttpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $err                = curl_error($curl);
         if ($err) {
-            $error = new \Error($err . " to { {$uri} }", "ERROR:CURL");
+            $error = new \ErrorHandler($err . " to { {$uri} }", "ERROR:CURL");
             $error->setData("url", $uri);
             throw $error;
         }
