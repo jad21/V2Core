@@ -176,6 +176,10 @@ class Api
 
         return $this->builResponse($return);
     }
+    public function getCodeHttp()
+    {
+        return $this->lastHttpCode;
+    }
     protected function builResponse($res)
     {
         if ($this->getResponseType() == self::RESPONSE_TYPE_JSON) {
