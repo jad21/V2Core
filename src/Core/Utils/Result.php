@@ -1,7 +1,8 @@
 <?php
 namespace V2\Core\Utils;
+use ArrayAccess;
 
-class Result
+class Result implements ArrayAccess 
 {
     public $code  = "";
     public $msg   = "";
@@ -60,6 +61,20 @@ class Result
             }
         }
     }
+    public function __get($name)
+    {
+        if (is_array($this->data)) {
+            if (array_key_exists($name, $this->data)) {
+                return $this->data[$name];
+            }
+        }
+        if (is_object($this->data)) {
+            if (property_exists($this->data,$name)) {
+                return $this->data->{$name};
+            }
+        }
+        throw new \Exception("data not has: {$name}", 1);
+    }
     public function getMessage()
     {
         return $this->msg;
@@ -81,5 +96,25 @@ class Result
     public function __tostring()
     {
         return $this->toJson();
+    }
+
+    public function offsetSet($offset, $value) {
+        if (is_null($offset)) {
+            $this->data[] = $value;
+        } else {
+            $this->data[$offset] = $value;
+        }
+    }
+
+    public function offsetExists($offset) {
+        return isset($this->data[$offset]);
+    }
+
+    public function offsetUnset($offset) {
+        unset($this->data[$offset]);
+    }
+
+    public function offsetGet($offset) {
+        return isset($this->data[$offset]) ? $this->data[$offset] : null;
     }
 }

@@ -7,13 +7,13 @@ class ErrorHandler extends Exception
 {
     protected $severity;
     protected $code_error;
-    public function __construct($message,$code_error = "ERROREXCEPTIONFATAL",$code = 1, Exception $previous = null)
+    public function __construct($message,$code_error = "ERROREXCEPTIONFATAL",$code = 1, Exception $previous = null,array $data = [])
     {
         $this->message  = $message;
         $this->code_error  = $code_error;
         $this->code     = $code;
         $this->previous     = $previous;
-        $this->data     = [];
+        $this->data     = $data;
     }
     public function setSeverity($value)
     {

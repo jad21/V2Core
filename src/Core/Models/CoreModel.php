@@ -307,4 +307,8 @@ abstract class CoreModel
         $this->variables = array();
         return $result;
     }
+    public function query($sql,$array = [])
+    {
+        return $this->db->query($sql, $array);
+    }
 }

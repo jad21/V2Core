@@ -40,4 +40,13 @@ abstract class Cache
         }
     }
 
+    public static function time($key){
+        $hash = md5($key);
+        $file = self::$directory . "/$hash.cache";
+        if (file_exists($file)) {
+            return filemtime($file);
+        }else{
+            return null;
+        }
+    }
 }
