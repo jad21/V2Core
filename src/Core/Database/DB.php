@@ -119,6 +119,11 @@ class DB {
                 #si se agoto el tiempo de la conexio, reconectar
                 if (in_array($SQLSTATE,["2006","2013"]) ) {
                     $this->CloseConnection();
+                    /**
+                     *      Llamarse de nuevo para retomar la conexion
+                     *    @author Jose Angel Delgado <esojangel@gmail.com>
+                     */
+                    return $this->Init($query, $parameters);
                 }
                 $error
                     ->setCode($this->code_errors["timeout"])
