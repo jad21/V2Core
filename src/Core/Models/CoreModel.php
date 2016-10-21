@@ -19,6 +19,10 @@ abstract class CoreModel
         $this->db        = ManagerDB::getConnection($this->connection_name);
         $this->variables = $data;
     }
+    public function getDB()
+    {
+        return $this->db;
+    }
     public function __set($name, $value)
     {
         if (strtolower($name) === $this->primary_key) {

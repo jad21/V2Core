@@ -33,7 +33,7 @@ class View
 		$this->output = $output;
 	}
 
-	public function __tostring()
+	public function __toString()
 	{
 		$this->render();
 		return $this->output;

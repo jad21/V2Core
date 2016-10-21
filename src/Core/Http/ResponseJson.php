@@ -31,9 +31,6 @@ class ResponseJson
         if (is_object($this->data) OR is_array($this->data) ) {
             return json_encode($this->data,JSON_PRETTY_PRINT);
         }
-        if ($this->is_json_valid($this->data)) {
-            return json_encode($this->data,JSON_PRETTY_PRINT);
-        }
         return json_encode(["data"=>$this->data],JSON_PRETTY_PRINT);
 
     }
@@ -48,7 +45,7 @@ class ResponseJson
         }
     }
     
-    public function __tostring()
+    public function __toString()
     {
         return (string)$this->toJson();
     }

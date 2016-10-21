@@ -9,24 +9,68 @@ class RenderTime
 
     private $start;
     private $end;
+    private $format = "d/m/y H:i:s";
 
     public function __construct()
     {
-        $this->start = null;
-        $this->end   = null;
+        $this->start      = null;
+        $this->end        = null;
+        $this->start_time = null;
+        $this->end_time   = null;
     }
 
     public function start()
     {
-        $this->start = microtime(true);
-        $this->end   = null;
+        $this->start      = microtime(true);
+        $this->start_time = time();
+        $this->end        = null;
         return $this;
     }
-
+    public function date($time = null)
+    {
+        return date($this->getFormat(), $time?:time());
+    }
+    public function date_start()
+    {
+        return $this->date($this->start_time);
+    }
+    public function date_end()
+    {
+        return $this->date($this->end_time);
+    }
+    public function setFormat($format)
+    {
+        $this->format = $format;
+    }
+    public function getFormat()
+    {
+        return $this->format;
+    }
     public function end()
     {
-        $this->end = microtime(true);
+        $this->end      = microtime(true);
+        $this->end_time = time();
         return $this;
+    }
+    public function duration()
+    {
+        $secs = $this->end_time - $this->start_time;
+        $bit  = array(
+            'y' => $secs / 31556926 % 12,
+            'w' => $secs / 604800 % 52,
+            'd' => $secs / 86400 % 7,
+            'h' => $secs / 3600 % 24,
+            'm' => $secs / 60 % 60,
+            's' => $secs % 60,
+        );
+        $ret = [];
+        foreach ($bit as $k => $v) {
+            if ($v > 0) {
+                $ret[] = $v . $k;
+            }
+        }
+
+        return join(' ', $ret);
     }
 
     /**

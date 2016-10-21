@@ -25,8 +25,8 @@ class Response
         
     }
 
-    public function __tostring() {
+    public function __toString() {
         
-        return $this->result->__tostring();
+        return (string)$this->result;
     }
 }
