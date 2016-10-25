@@ -1,3 +1,4 @@
+
 <?php
 
 use V2\Core\Logs\Logger;
@@ -111,6 +112,9 @@ class ErrorHandler extends Exception
     }
 
 }
+/*short name*/
+class Err extends \ErrorHandler {}
+
 
 if (!function_exists('ErrorHandlerFaltal')) {
     /**

@@ -11,12 +11,15 @@ class RenderTime
     private $end;
     private $format = "d/m/y H:i:s";
 
-    public function __construct()
+    public function __construct($autoinit = true)
     {
         $this->start      = null;
         $this->end        = null;
         $this->start_time = null;
         $this->end_time   = null;
+        if ($autoinit) {
+            $this->start();
+        }
     }
 
     public function start()
@@ -28,14 +31,20 @@ class RenderTime
     }
     public function date($time = null)
     {
-        return date($this->getFormat(), $time?:time());
+        return date($this->getFormat(), $time ?: time());
     }
     public function date_start()
     {
+        is_null($this->start_time) && $this->start();
         return $this->date($this->start_time);
     }
     public function date_end()
     {
+        if (is_null($this->start_time)) {
+            return 'Can\'t return the render time';
+        }
+
+        is_null($this->end_time) && $this->end();
         return $this->date($this->end_time);
     }
     public function setFormat($format)
@@ -52,8 +61,18 @@ class RenderTime
         $this->end_time = time();
         return $this;
     }
+    public function getStarTime()
+    {
+        return $this->start_time;
+    }
     public function duration()
     {
+        if (is_null($this->start_time)) {
+            return 'Can\'t return the render time';
+        }
+        if (is_null($this->end_time)) {
+            $this->end();
+        }
         $secs = $this->end_time - $this->start_time;
         $bit  = array(
             'y' => $secs / 31556926 % 12,
@@ -104,7 +123,7 @@ class RenderTime
     }
     public function __toString()
     {
-        return $this->getRenderTime();
+        return $this->duration();
     }
 
     private static function getUnit($precision)

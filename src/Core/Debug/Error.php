@@ -1,3 +1,3 @@
 <?php
-namespace V2;
-class Error extends \ErrorHandler {}
+namespace ;
+class Err extends \ErrorHandler {}

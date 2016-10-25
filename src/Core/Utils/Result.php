@@ -93,7 +93,7 @@ class Result implements ArrayAccess
     {
         return json_encode($this->toArray(),JSON_PRETTY_PRINT);
     }
-    public function __tostring()
+    public function __toString()
     {
         return $this->toJson();
     }

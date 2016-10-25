@@ -86,6 +86,6 @@ class Console extends ApplicationBase
         } 
         else { 
             exec($cmd . " > /dev/null &");   
-        } 
+        }
     }
 }
