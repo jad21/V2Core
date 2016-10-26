@@ -43,6 +43,11 @@ class ErrorHandler extends Exception
     {
         return $this->data;
     }
+    public function setCode($code)
+    {
+        $this->code = $code;
+        return $this;
+    }
     public function setCodeError($code_error)
     {
         $this->code_error = $code_error;
