@@ -85,9 +85,11 @@ class ErrorHandler extends Exception
     }
     public static function render($e)
     {
-        if(function_exists('header')){
-            header('HTTP/1.1 500 Error Server');
-            header('Content-Type: application/json');
+        if (php_sapi_name() != "cli") {
+	        if(function_exists('header')){
+	            header('HTTP/1.1 500 Error Server');
+	            header('Content-Type: application/json');
+	        }
         }
         $body_exception =
             $e->getMessage() . " " .

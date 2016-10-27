@@ -231,6 +231,7 @@ abstract class CoreModel
         }
         $sql .= $_query_filter;
         $sql .= " LIMIT 1";
+        $this->setLastQuery($sql);
         $res                 = $this->db->row($sql, $bindParams, \PDO::FETCH_OBJ);
         $this->_query_filter = [];
         if (!empty($res)) {

@@ -1,6 +1,7 @@
 {
     "name":"jad21/V2Core",
     "description":"Module Core V2",
+    "version": "0.0.2",
     "authors": [
         {
             "name": "Jose Angel Delgado",
