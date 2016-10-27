@@ -224,8 +224,8 @@ if (!function_exists('not')) {
     }
 }
 
-if (!function_exists('camel_case')) {
-    function camel_case($input)
+if (!function_exists('lower_camel_case')) {
+    function lower_camel_case($input)
     {
         preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
         $ret = $matches[0];
@@ -233,5 +233,17 @@ if (!function_exists('camel_case')) {
             $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
         }
         return implode('_', $ret);
+    }
+}
+if (!function_exists('upper_camel_case')) {
+    function upper_camel_case($str)
+    {
+        $i   = array("-", "_");
+        $str = preg_replace('/([a-z])([A-Z])/', "\\1 \\2", $str);
+        $str = preg_replace('@[^a-zA-Z0-9\-_ ]+@', '', $str);
+        $str = str_replace($i, ' ', $str);
+        $str = str_replace(' ', '', ucwords(strtolower($str)));
+        $str = strtolower(substr($str, 0, 1)) . substr($str, 1);
+        return $str;
     }
 }

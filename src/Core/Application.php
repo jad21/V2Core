@@ -77,16 +77,11 @@ class Application
 
         if (class_exists($class)) {
             $controller   = new $class;
-            $action_name  = strtolower($request->method);
-            $action_name  = strtolower($method_name);
-            if(method_exists($controller, $action_name)){
-                $controller->__middleware("before",$request);
-                $response_str = call_user_func_array(array($controller, $action_name), $arguments_method);
-                $controller->__middleware("after",$request);
-            }else{
-                header('HTTP/1.1 404 Not Found');
-                $response_str = 'Unknown request: ' . join("/",$request->url_elements);
-            }
+            /**
+             *      Despachador
+             *    @author Jose Angel Delgado <esojangel@gmail.com>
+             */
+            $response_str = $controller->__makeDispatcher__($request,$method_name,$arguments_method);
                 
         } else {
             header('HTTP/1.1 404 Not Found');
