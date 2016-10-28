@@ -44,4 +44,8 @@ class RestControllerCore extends ControllerCore
     {
     	return in_array(strtoupper($method),["POST","DELETE","HEAD","GET","PUT"]);
     }
+    public function __destruct()
+    {
+        unset($this);
+    }
 }

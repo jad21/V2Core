@@ -24,12 +24,16 @@ class View
 		ob_start();
 		extract($data);
 		foreach ($views_template as $i => $template) {
-			$template = strtr($template,[".","/"]);
-			include $basepath . $template . ".php";
+			$template = strtr($template,["."=>"/"]);
+			$file = $basepath . $template . ".php";
+			if (not(file_exists($file))) {
+				ex(result()->error("View no exists {$template} => {$file}"));
+				throw new \ErrorHandler("View no exists {$template} => {$file}");
+			}
+			include $file;
 		}
 	    $output = ob_get_contents();
 	    ob_end_clean();
-	    
 		$this->output = $output;
 	}
 

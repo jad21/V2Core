@@ -56,12 +56,13 @@ if (!function_exists('dd')) {
      * @return void
      */
     function dd()
-    {
+    {   
+        if (php_sapi_name() != "cli") echo "<pre>";
         array_map(function ($x) {
             var_dump($x);
             // (new Dumper)->dump($x);
         }, func_get_args());
-
+        if (php_sapi_name() != "cli") echo "</pre>";
         die(1);
     }
 }
@@ -74,10 +75,12 @@ if (!function_exists('d')) {
      */
     function d()
     {
+        if (php_sapi_name() != "cli") echo "<pre>";
         array_map(function ($x) {
             var_dump($x);
             // (new Dumper)->dump($x);
         }, func_get_args());
+        if (php_sapi_name() != "cli") echo "</pre>";
     }
 }
 
@@ -117,7 +120,7 @@ if (!function_exists('url')) {
                     $url = substr($url, 1);
                 }
             }
-            return "{$http}://{$host}{$port}{$urlbase}/{$url}";
+            return "{$http}://{$host}{$port}{$urlbase}{$url}";
         }
         return null;
     }
