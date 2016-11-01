@@ -17,6 +17,9 @@ class DB {
     # @string, name conection
     private $name = null;
 
+    #limit time connection
+    private $limit_time = null;
+
     protected $code_errors = [
         "timeout"=>2006,
         "parse"=>2000,
@@ -44,6 +47,7 @@ class DB {
             
             # Connection succeeded, set the boolean to true.
             $this->bConnected = true;
+            $this->limit_time = strtotime("+15 min");
         }
         catch (PDOException $e) {
             throw new Exception($e->getMessage(), -2);
@@ -72,6 +76,18 @@ class DB {
             $this->Connect();
         }
         try {
+            #time connection is too long, reconnection
+            $now = time();
+            if ($now > $this->limit_time) {
+                $this->CloseConnection();
+                /**
+                 *      Desconectamos y conectamos nuevamente, luego de media hora
+                 *    @author Jose Angel Delgado <esojangel@gmail.com>
+                 */
+                return $this->Init($query, $parameters);
+            }
+
+
             # Prepare query
             $this->PDOstatement = $this->pdo->prepare($query);
             

@@ -48,6 +48,9 @@ class Mail
     public function To($email,$name=null) {
         $this->mail->addAddress($email,$name);
     }
+    public function Cc($email,$name=null) {
+        $this->mail->addCC($email,$name);
+    }
     public function Subject($value='') {
         $this->mail->Subject = $value;
     }
