@@ -34,7 +34,7 @@ class Console extends ApplicationBase
 	public function getClassCommands()
 	{
 		$list_commands = [];
-		$commands = env("commands");
+		$commands = etc("commands");
 		foreach ($commands->list->class as $class) {
 			$list_commands[] = (string)$class;
 		}
