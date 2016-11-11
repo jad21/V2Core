@@ -10,6 +10,18 @@ class ErrorHandler extends Exception
     protected $code_error;
     public function __construct($message,$code_error = "ERROREXCEPTIONFATAL",$code = 1, Exception $previous = null,array $data = [])
     {
+        if ($message instanceof Result) {
+            $result_err = $message;
+            if ($message->isBad()) {
+                $message = $result_err->getMessage();
+                if(not(empty($result_err->getCode()))){
+                    $code_error = $result_err->getCode();
+                }
+                $data = $result_err->getData();
+            }else{
+                throw new Exception("Error arguments for __construct of ErrorHandler", -1);
+            }
+        }
         $this->message  = $message;
         $this->code_error  = $code_error;
         $this->code     = $code;

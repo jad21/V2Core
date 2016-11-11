@@ -47,6 +47,7 @@ class DB {
             
             # Connection succeeded, set the boolean to true.
             $this->bConnected = true;
+            
             $this->limit_time = strtotime("+15 min");
         }
         catch (PDOException $e) {
@@ -221,6 +222,9 @@ class DB {
      */
     public function beginTransaction()
     {
+        if (!$this->bConnected) {
+            $this->Connect();
+        }
         return $this->pdo->beginTransaction();
     }
     

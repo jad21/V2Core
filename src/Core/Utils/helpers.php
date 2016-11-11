@@ -186,6 +186,12 @@ if (!function_exists('env')) {
         return Env::getData($file);
     }
 }
+if (!function_exists('etc')) {
+    function etc($file = null)
+    {
+        return Env::getData($file);
+    }
+}
 if (!function_exists('value')) {
     function value($arg)
     {

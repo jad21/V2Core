@@ -74,7 +74,6 @@ class Application
         $controller_name = ucfirst($controller_name) . 'Controller';
         
         $class =  "\App\Modules\\{$module_name}\Controllers\\{$controller_name}";
-
         if (class_exists($class)) {
             $controller   = new $class;
             /**

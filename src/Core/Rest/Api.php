@@ -1,5 +1,6 @@
 <?php
 namespace V2\Core\Rest;
+use V2\Core\Logs\Logger;
 
 class Api
 {
@@ -45,7 +46,10 @@ class Api
 
     public function get($methodURl = '', $params = [])
     {
-        return $exec = $this->execute($methodURl, null, $params);
+        $opts = array(
+            CURLOPT_CUSTOMREQUEST => "GET",
+        );
+        return $exec = $this->execute($methodURl, $opts, $params);
         // return $this->handle($url);
     }
     public function delete($methodURl = '', $params = [])
@@ -157,6 +161,13 @@ class Api
         if (!empty($params)) {
             $uri = $this->buildUrl($uri, $params);
         }
+
+        if (defined("ENV") and in_array(ENV,["dev","test"])) {
+            $method = isset($opts[CURLOPT_CUSTOMREQUEST])?$opts[CURLOPT_CUSTOMREQUEST]:"POST";
+            Logger::log($method." ".$uri,"request_curl");
+        }
+        
+
         $curl = curl_init($uri);
         curl_setopt_array($curl, $this->curl_opts_default);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->formatHeaders());

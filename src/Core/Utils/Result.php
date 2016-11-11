@@ -88,7 +88,10 @@ class Result implements ArrayAccess
             "data"  => $this->data,
         ];
     }
-    
+    public function getCode()
+    {
+        return $this->code;
+    }
     public function toJson()
     {
         return json_encode($this->toArray(),JSON_PRETTY_PRINT);

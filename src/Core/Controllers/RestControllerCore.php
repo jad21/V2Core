@@ -20,6 +20,7 @@ class RestControllerCore extends ControllerCore
         $controller = $this;
         $method_http = $request->method;
 		$this->setParameters($request->parameters);
+        $method_name = upper_camel_case($method_name);
         $action_name = "{$method_name}_$method_http";
         if (not(method_exists($controller, $action_name))) {
         	$action_name = $method_name;
