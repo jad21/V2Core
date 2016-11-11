@@ -189,6 +189,11 @@ if (!function_exists('env')) {
 if (!function_exists('etc')) {
     function etc($file = null)
     {
+        if (defined("ENV")) {
+            $name_array = explode(".",$file);
+            $extension = array_pop($name_array);
+            $file = join(".",$name_array).".".ENV.".".$extension;
+        }
         return Env::getData($file);
     }
 }
