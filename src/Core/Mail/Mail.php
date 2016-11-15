@@ -10,7 +10,7 @@ class Mail
         $this->mail = new \PHPMailer;
 
         //$mail->SMTPDebug = 3;                               // Enable verbose debug output
-        $config = env()->mail->smtp;
+        $config = etc()->mail->smtp;
         $this->mail->isSMTP();                                      // Set mailer to use SMTP
         $this->mail->Host = (string)$config->Host;  // Specify main and backup SMTP servers
         $this->mail->SMTPAuth = true;                               // Enable SMTP authentication
