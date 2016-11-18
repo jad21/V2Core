@@ -84,7 +84,7 @@ class DB {
         try {
             #time connection is too long, reconnection
             $now = time();
-            if ($now > $this->limit_time and not($this->is_transaction)) {
+            if ($now > $this->limit_time and $this->is_transaction==false) {
                 $this->CloseConnection();
                 /**
                  *      Desconectamos y conectamos nuevamente, luego de media hora
@@ -231,7 +231,7 @@ class DB {
      */
     public function beginTransaction()
     {
-        $this->is_transaction = false;
+        $this->is_transaction = true;
         if (!$this->bConnected) {
             $this->Connect();
         }
