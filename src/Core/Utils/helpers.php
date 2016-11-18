@@ -66,6 +66,25 @@ if (!function_exists('dd')) {
         die(1);
     }
 }
+
+if (!function_exists('pp')) {
+    /**
+     * Dump the passed variables and end the script.
+     *
+     * @param  mixed
+     * @return void
+     */
+    function pp()
+    {   
+        if (php_sapi_name() != "cli") echo "<pre>";
+        array_map(function ($x) {
+            print_r($x);
+            // (new Dumper)->dump($x);
+        }, func_get_args());
+        if (php_sapi_name() != "cli") echo "</pre>";
+        die(1);
+    }
+}
 if (!function_exists('d')) {
     /**
      * Dump the passed variables and end the script.

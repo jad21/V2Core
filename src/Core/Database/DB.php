@@ -4,6 +4,8 @@ use ErrorHandler;
 use Exception;
 use PDOException;
 use PDO;
+use V2\Core\Logs\Logger;
+
 class DB {
 
     # @object, The PDO object
@@ -17,8 +19,11 @@ class DB {
     # @string, name conection
     private $name = null;
 
-    #limit time connection
+    # @time limit time connection
     private $limit_time = null;
+    
+    # @bool
+    private $is_transaction = false;
 
     protected $code_errors = [
         "timeout"=>2006,
@@ -79,7 +84,7 @@ class DB {
         try {
             #time connection is too long, reconnection
             $now = time();
-            if ($now > $this->limit_time) {
+            if ($now > $this->limit_time and not($this->is_transaction)) {
                 $this->CloseConnection();
                 /**
                  *      Desconectamos y conectamos nuevamente, luego de media hora
@@ -88,7 +93,11 @@ class DB {
                 return $this->Init($query, $parameters);
             }
 
-
+            if (defined("ENV") and in_array(ENV,["dev","test"])) {
+                $filelog = "sql";
+                Logger::log("parameters:".je($parameters),$filelog);
+                Logger::log("query:".$query,$filelog);
+            }
             # Prepare query
             $this->PDOstatement = $this->pdo->prepare($query);
             
@@ -222,6 +231,7 @@ class DB {
      */
     public function beginTransaction()
     {
+        $this->is_transaction = false;
         if (!$this->bConnected) {
             $this->Connect();
         }
@@ -234,6 +244,7 @@ class DB {
      */
     public function executeTransaction()
     {
+        $this->is_transaction = false;
         return $this->pdo->commit();
     }
     
@@ -243,6 +254,7 @@ class DB {
      */
     public function rollBack()
     {
+        $this->is_transaction = false;
         return $this->pdo->rollBack();
     }
     
