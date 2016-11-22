@@ -37,6 +37,9 @@ class Env
             	case 'json':
             		$data = json_decode(file_get_contents($this->configfile));
             		break;
+            	case 'yaml':
+            		$data = yaml_parse_file($this->configfile);
+            		break;
             	default:
             		$data = file_get_contents($this->configfile);
             		break;
