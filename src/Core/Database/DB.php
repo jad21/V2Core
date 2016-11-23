@@ -255,7 +255,9 @@ class DB {
     public function rollBack()
     {
         $this->is_transaction = false;
-        return $this->pdo->rollBack();
+        if ($this->bConnected) {
+            return $this->pdo->rollBack();
+        }
     }
     
     /**

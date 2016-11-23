@@ -280,3 +280,10 @@ if (!function_exists('upper_camel_case')) {
         return $str;
     }
 }
+
+if (!function_exists('not_empty')) {
+    function not_empty($arg)
+    {
+        return !empty($arg);
+    }
+}
