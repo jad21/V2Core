@@ -80,7 +80,7 @@ class RenderTime
             'd' => $secs / 86400 % 7,
             'h' => $secs / 3600 % 24,
             'm' => $secs / 60 % 60,
-            's' => $secs % 60,
+            '' => $this->getRenderTime(self::PRECISION_SECOND,4),
         );
         $ret = [];
         foreach ($bit as $k => $v) {
