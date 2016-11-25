@@ -80,7 +80,7 @@ class RenderTime
             'd' => $secs / 86400 % 7,
             'h' => $secs / 3600 % 24,
             'm' => $secs / 60 % 60,
-            '' => $this->getRenderTime(self::PRECISION_SECOND,4),
+            's' => $secs % 60
         );
         $ret = [];
         foreach ($bit as $k => $v) {
@@ -88,8 +88,11 @@ class RenderTime
                 $ret[] = $v . $k;
             }
         }
-
-        return join(' ', $ret);
+        $result = join(' ', $ret);
+        if(empty(trim($result))){
+            return $this->getRenderTime(self::PRECISION_SECOND,4);
+        }
+        return $result;;
     }
 
     /**
