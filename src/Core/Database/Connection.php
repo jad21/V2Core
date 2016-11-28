@@ -17,7 +17,7 @@ class Connection
 	public function getConfigData($name=null) {
         
         if (file_exists($this->configfile)) {
-            $xml = simplexml_load_file($this->configfile);
+            $xml = etc(CONFIG_FILE);
             if ($name) {
             	$dbdata = $xml->db->connections->{trim($name)};
             	if (is_null($dbdata)) {
