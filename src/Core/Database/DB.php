@@ -153,7 +153,7 @@ class DB {
                     return $this->Init($query, $parameters);
                 }
                 $error
-                    ->setCode($this->code_errors["timeout"])
+                    ->setCode($SQLSTATE)
                     ->setCodeError("PDOEXCEPTIONTIMEOUT");
             }
             throw $error;
