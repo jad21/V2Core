@@ -316,4 +316,9 @@ abstract class CoreModel
     {
         return $this->db->query($sql, $array);
     }
+    
+    public function querySql($sql,$array = [])
+    {
+        return $this->db->query($sql, $array);
+    }
 }
