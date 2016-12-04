@@ -235,6 +235,7 @@ class DB {
         if (!$this->bConnected) {
             $this->Connect();
         }
+        $this->query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
         return $this->pdo->beginTransaction();
     }
     

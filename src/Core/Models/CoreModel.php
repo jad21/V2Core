@@ -321,4 +321,21 @@ abstract class CoreModel
     {
         return $this->db->query($sql, $array);
     }
+
+    /**
+     *      Para usar set y get en las variables
+     *    @author Jose Angel Delgado <esojangel@gmail.com>
+     */
+    public function __call($funs, $arg)
+    {
+        $method = strtolower(substr($funs, 0, 3));
+        $attr   = lower_camel_case(substr($funs, 3));
+        if ($method == "set") {
+            $this->{trim($attr)} = $arg[0];
+            return $this;
+        } else if ($method == "get" and array_key_exists($attr, $this->product)) {
+            return $this->{trim($attr)};
+        }
+        throw new Exception("bad method {$funs}");
+    }
 }
