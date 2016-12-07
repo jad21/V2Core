@@ -19,6 +19,10 @@ abstract class CoreModel
         $this->db        = ManagerDB::getConnection($this->connection_name);
         $this->variables = $data;
     }
+    public function getNameConnection()
+    {
+        return $this->connection_name;
+    }
     public function getDB()
     {
         return $this->db;
