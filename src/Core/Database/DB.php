@@ -1,12 +1,14 @@
 <?php
 namespace V2\Core\Database;
+
 use ErrorHandler;
 use Exception;
-use PDOException;
 use PDO;
+use PDOException;
 use V2\Core\Logs\Logger;
 
-class DB {
+class DB
+{
 
     # @object, The PDO object
     private $pdo;
@@ -21,63 +23,67 @@ class DB {
 
     # @time limit time connection
     private $limit_time = null;
-    
+
     # @bool
     private $is_transaction = false;
 
     protected $code_errors = [
-        "timeout"=>2006,
-        "parse"=>2000,
+        "timeout" => 2006,
+        "parse"   => 2000,
     ];
-    public function __construct($name = null) {
+    public function __construct($name = null)
+    {
         $this->name = $name;
         // $this->Connect();
     }
     private function Connect()
     {
         $name = $this->name;
-        $con = new Connection($name);
-        $dsn            = 'mysql:host=' . $con->getHost() . ';dbname=' . $con->getDbname();
+        $con  = new Connection($name);
+        $dsn  = 'mysql:host=' . $con->getHost() . ';dbname=' . $con->getDbname();
         try {
             # Read settings from INI file, set UTF8
             $this->pdo = new PDO($dsn, $con->getUser(), $con->getPass(), array(
-                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
             ));
-            
-            # We can now log any exceptions on Fatal error. 
+
+            # We can now log any exceptions on Fatal error.
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
+
             # Disable emulation of prepared statements, use REAL prepared statements instead.
             // $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-            
+
             # Connection succeeded, set the boolean to true.
             $this->bConnected = true;
-            
-            $this->limit_time = strtotime("+10 min");
-        }
-        catch (PDOException $e) {
+
+            $this->limit_time = strtotime("+15 min");
+        } catch (PDOException $e) {
             throw new Exception($e->getMessage(), -2);
         }
     }
 
     public function CloseConnection()
     {
-        $this->pdo = null;
-        $this->PDOstatement = null;
-        $this->bConnected = false;
-        if (php_sapi_name()=="cli" and defined("DEBUG") and DEBUG) {
-            echo "\n+--------------------------------------------+\n";
-            echo "\n+   CloseConnection Database {$this->name}    \n";
-            echo "\n+--------------------------------------------+\n";
+        if ($this->bConnected) {
+            $this->pdo          = null;
+            $this->PDOstatement = null;
+            $this->bConnected   = false;
+            if (php_sapi_name() == "cli" and defined("DEBUG") and DEBUG) {
+                $msg = "\n+---   CloseConnection Database {$this->name}    ---+\n";
+                Logger::log($msg,"sql");
+                if (defined("DEBUG") and DEBUG) {
+                    echo $msg;
+                }
+            }
         }
     }
     /**
      *  Every method which needs to execute a SQL query uses this method.
-     *  
+     *
      *  1. If not connected, connect to the database.
      *  2. Prepare Query.
      *  3. Parameterize Query.
-     *  4. Execute Query.   
+     *  4. Execute Query.
      *  5. On exception : Write Exception into the log + SQL query.
      *  6. Reset the Parameters.
      */
@@ -90,7 +96,7 @@ class DB {
         try {
             #time connection is too long, reconnection
             $now = time();
-            if ($now > $this->limit_time and $this->is_transaction==false) {
+            if ($now > $this->limit_time and $this->is_transaction == false) {
                 $this->CloseConnection();
                 /**
                  *      Desconectamos y conectamos nuevamente, luego de media hora
@@ -98,29 +104,28 @@ class DB {
                  */
                 return $this->Init($query, $parameters);
             }
-
             if (defined("DEBUG") and DEBUG) {
                 $filelog = "sql";
-                Logger::log("parameters:".je($parameters),$filelog);
-                Logger::log("query:".$query,$filelog);
+                Logger::log("parameters:" . je($parameters), $filelog);
+                Logger::log("query:" . $query, $filelog);
             }
             # Prepare query
             $this->PDOstatement = $this->pdo->prepare($query);
-            
-            # Add parameters to the parameter array 
+
+            # Add parameters to the parameter array
             $this->bindMore($parameters);
-            
+
             # Bind parameters
             if (!empty($this->parameters)) {
                 foreach ($this->parameters as $param => $value) {
-                    
+
                     $type = PDO::PARAM_STR;
                     switch ($value[1]) {
                         case 0:
                             $type = PDO::PARAM_STR;
                             break;
-                        case is_int($value[1]): 
-                            $type = PDO::PARAM_INT; 
+                        case is_int($value[1]):
+                            $type = PDO::PARAM_INT;
                             break;
                         case is_bool($value[1]):
                             $type = PDO::PARAM_BOOL;
@@ -135,22 +140,21 @@ class DB {
                     // $this->PDOstatement->bindParam($value[0], $value[1],$type);
                 }
             }
-            
-            # Execute SQL 
+
+            # Execute SQL
             $this->PDOstatement->execute();
             # Reset the parameters
             $this->parameters = array();
-        }
-        catch (PDOException $e) {
-            $trace = explode(":",$e->getMessage());
-            
+        } catch (PDOException $e) {
+            $trace = explode(":", $e->getMessage());
+
             // si => SQLSTATE[HY000]: General error: 2006 MySQL server has gone away
-            $error = new \ErrorHandler($e->getMessage(),"PDOEXCEPTION",$this->code_errors["parse"],$e);
-            $error->setData("query",$query);
-            if (sizeof($trace)>2) {
-                $SQLSTATE = trim(substr($trace[2],0,6));
+            $error = new \ErrorHandler($e->getMessage(), "PDOEXCEPTION", $this->code_errors["parse"], $e);
+            $error->setData("query", $query);
+            if (sizeof($trace) > 2) {
+                $SQLSTATE = trim(substr($trace[2], 0, 6));
                 #si se agoto el tiempo de la conexio, reconectar
-                if (in_array($SQLSTATE,["2006","2013"]) ) {
+                if (in_array($SQLSTATE, ["2006", "2013"])) {
                     $this->CloseConnection();
                     /**
                      *      Llamarse de nuevo para retomar la conexion
@@ -164,22 +168,22 @@ class DB {
             }
             throw $error;
         }
-        
-    }  
-    /**
-     *  @void 
-     *
-     *  Add the parameter to the parameter array
-     *  @param string $para  
-     *  @param string $value 
-     */
-    public function bind($para, $value)
-    {
-        $this->parameters[sizeof($this->parameters)] = [":" . $para , $value];
+
     }
     /**
      *  @void
-     *  
+     *
+     *  Add the parameter to the parameter array
+     *  @param string $para
+     *  @param string $value
+     */
+    public function bind($para, $value)
+    {
+        $this->parameters[sizeof($this->parameters)] = [":" . $para, $value];
+    }
+    /**
+     *  @void
+     *
      *  Add more parameters to the parameter array
      *  @param array $parray
      */
@@ -191,7 +195,7 @@ class DB {
                 $this->bind($column, $parray[$column]);
             }
         }
-    } 
+    }
     /**
      *  If the SQL query  contains a SELECT or SHOW statement it returns an array containing all of the result set row
      *  If the SQL statement is a DELETE, INSERT, or UPDATE statement it returns the number of affected rows
@@ -205,23 +209,23 @@ class DB {
     // public function query($query, $params = null, $fetchmode = PDO::FETCH_ASSOC)
     {
         $query = trim(str_replace("\r", " ", $query));
-        
+
         $this->Init($query, $params);
-        
+
         $rawStatement = explode(" ", preg_replace("/\s+|\t+|\n+/", " ", $query));
-        
-        # Which SQL statement is used 
+
+        # Which SQL statement is used
         $statement = strtolower($rawStatement[0]);
-        
+
         if ($statement === 'select' || $statement === 'show') {
             return $this->PDOstatement->fetchAll($fetchmode);
         } elseif ($statement === 'insert' || $statement === 'update' || $statement === 'delete') {
             return $this->PDOstatement->rowCount();
         } else {
-            return NULL;
+            return null;
         }
     }
-    
+
     /**
      *  Returns the last inserted id.
      *  @return string
@@ -230,7 +234,7 @@ class DB {
     {
         return $this->pdo->lastInsertId();
     }
-    
+
     /**
      * Starts the transaction
      * @return boolean, true on success or false on failure
@@ -244,7 +248,7 @@ class DB {
         $this->query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
         return $this->pdo->beginTransaction();
     }
-    
+
     /**
      *  Execute Transaction
      *  @return boolean, true on success or false on failure
@@ -254,7 +258,7 @@ class DB {
         $this->is_transaction = false;
         return $this->pdo->commit();
     }
-    
+
     /**
      *  Rollback of Transaction
      *  @return boolean, true on success or false on failure
@@ -267,9 +271,9 @@ class DB {
             return $bool;
         }
     }
-    
+
     /**
-     *  Returns an array which represents a column from the result set 
+     *  Returns an array which represents a column from the result set
      *
      *  @param  string $query
      *  @param  array  $params
@@ -279,18 +283,18 @@ class DB {
     {
         $this->Init($query, $params);
         $Columns = $this->PDOstatement->fetchAll(PDO::FETCH_NUM);
-        
+
         $column = null;
-        
+
         foreach ($Columns as $cells) {
             $column[] = $cells[0];
         }
-        
+
         return $column;
-        
+
     }
     /**
-     *  Returns an array which represents a row from the result set 
+     *  Returns an array which represents a row from the result set
      *
      *  @param  string $query
      *  @param  array  $params
@@ -302,7 +306,7 @@ class DB {
         $this->Init($query, $params);
         $result = $this->PDOstatement->fetch($fetchmode);
         $this->PDOstatement->closeCursor(); // Frees up the connection to the server so that other SQL statements may be issued,
-        
+
         return $result;
     }
     /**
@@ -317,15 +321,28 @@ class DB {
         $this->Init($query, $params);
         $result = $this->PDOstatement->fetchColumn();
         $this->PDOstatement->closeCursor(); // Frees up the connection to the server so that other SQL statements may be issued
-        
+
         return $result;
     }
 
-    public function ifNotTransactionCloseConnection()
+    public function ifNotTransactionCloseConnection($force = false)
     {
-        if (!$this->is_transaction) {
+        if (!$this->is_transaction and $force == false) {
+            $this->CloseConnection();
+        } elseif ($force) {
+            if ($this->is_transaction) {
+                $this->rollBack();
+            }
             $this->CloseConnection();
         }
     }
-    
+
+    public function __destruct()
+    {
+        if (defined("DEBUG") and DEBUG) {
+            $filelog = "sql";
+            Logger::log("__destruct method db conection:{$this->name}", $filelog);
+        }
+        $this->CloseConnection();
+    }
 }
