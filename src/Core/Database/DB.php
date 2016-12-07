@@ -53,7 +53,7 @@ class DB {
             # Connection succeeded, set the boolean to true.
             $this->bConnected = true;
             
-            $this->limit_time = strtotime("+15 min");
+            $this->limit_time = strtotime("+10 min");
         }
         catch (PDOException $e) {
             throw new Exception($e->getMessage(), -2);
@@ -63,7 +63,13 @@ class DB {
     public function CloseConnection()
     {
         $this->pdo = null;
+        $this->PDOstatement = null;
         $this->bConnected = false;
+        if (php_sapi_name()=="cli" and defined("DEBUG") and DEBUG) {
+            echo "\n+--------------------------------------------+\n";
+            echo "\n+   CloseConnection Database {$this->name}    \n";
+            echo "\n+--------------------------------------------+\n";
+        }
     }
     /**
      *  Every method which needs to execute a SQL query uses this method.
@@ -93,7 +99,7 @@ class DB {
                 return $this->Init($query, $parameters);
             }
 
-            if (defined("ENV") and in_array(ENV,["dev","test"])) {
+            if (defined("DEBUG") and DEBUG) {
                 $filelog = "sql";
                 Logger::log("parameters:".je($parameters),$filelog);
                 Logger::log("query:".$query,$filelog);
@@ -257,7 +263,8 @@ class DB {
     {
         $this->is_transaction = false;
         if ($this->bConnected) {
-            return $this->pdo->rollBack();
+            $bool = $this->pdo->rollBack();
+            return $bool;
         }
     }
     
@@ -295,6 +302,7 @@ class DB {
         $this->Init($query, $params);
         $result = $this->PDOstatement->fetch($fetchmode);
         $this->PDOstatement->closeCursor(); // Frees up the connection to the server so that other SQL statements may be issued,
+        
         return $result;
     }
     /**
@@ -309,7 +317,15 @@ class DB {
         $this->Init($query, $params);
         $result = $this->PDOstatement->fetchColumn();
         $this->PDOstatement->closeCursor(); // Frees up the connection to the server so that other SQL statements may be issued
+        
         return $result;
+    }
+
+    public function ifNotTransactionCloseConnection()
+    {
+        if (!$this->is_transaction) {
+            $this->CloseConnection();
+        }
     }
     
 }

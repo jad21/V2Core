@@ -135,6 +135,8 @@ if (!function_exists('url')) {
                 $urlbase = strtr($urlbase, [$_SERVER["PATH_INFO"] => ""]);
             }
             if ($url != "") {
+                $url = ltrim($url);
+                $url = rtrim($url);
                 if (strlen($url) > 0 and substr($url, 0, 1) == "/") {
                     $url = substr($url, 1);
                 }
