@@ -15,8 +15,9 @@ trait Single
     public static function __callStatic($func, $arg)
     {
     	$self = self::build();
-        // if (method_exists($self,$func)) {
-            // return call_user_func_array(array($self, $func), $arg);
+        if (method_exists($self,$func)) {
+            return call_user_func_array(array($self, $func), $arg);
+        }
         if (method_exists($self,"_".$func)) {
         	return call_user_func_array(array($self, "_".$func), $arg);
         	

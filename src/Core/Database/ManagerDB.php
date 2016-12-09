@@ -3,16 +3,15 @@ namespace V2\Core\Database;
 
 class ManagerDB
 {
-    const DB_DEFAULT               = "_@main@_";
+    
     protected static $dbconections = [];
 
     public static function getConnection($name=null)
     {
-                
+        if(empty($name)){
+            $name = etc()->db->default;
+        }
         if (!isset(self::$dbconections[$name])) {
-            if(empty($name)){
-                $name = etc()->db->default;
-            }
             self::$dbconections[$name] = new DB($name);
         }
         return self::$dbconections[$name];

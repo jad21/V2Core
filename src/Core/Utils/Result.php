@@ -25,11 +25,11 @@ class Result implements ArrayAccess
         $this->msg   = $msg;
         $this->error = $error;   
     }
-    public static function success($data = [], $msg = "", $code = "OK")
+    public static function success($data = [], $msg = "success", $code = "OK")
     {
         return new self($data, $msg, $code, $error = false);
     }
-    public static function error($msg = "", $data = [], $code = "ERROR")
+    public static function error($msg = "error", $data = [], $code = "ERROR")
     {
         return new self($data, $msg, $code, $error = true);
     }
@@ -73,11 +73,39 @@ class Result implements ArrayAccess
                 return $this->data->{$name};
             }
         }
+        if (property_exists($this,$name)) {
+            return $this->{$name};
+        }
         throw new \Exception("data not has: {$name}", 1);
     }
+    public function __isset($name)
+    {
+        if(is_array($this->data)) {
+            return isset($this->data[$name]);
+        }
+        if (is_object($this->data)) {
+            return isset($this->data->{$name});
+        }
+    }
+    public function __set($name,$value=null)
+    {
+        if(is_array($this->data)) {
+            $this->data[$name] = $value;
+        }
+        if (is_object($this->data)) {
+            $this->data->{$name} = $value;;
+        }
+        return $this;
+    }
+
     public function getMessage()
     {
         return $this->msg;
+    }
+    public function setMessage($msg)
+    {
+        $this->msg = $msg;
+        return $this;
     }
     public function toArray()
     {
@@ -98,7 +126,7 @@ class Result implements ArrayAccess
     }
     public function __toString()
     {
-        return $this->toJson();
+        return $this->getMessage();
     }
 
     public function offsetSet($offset, $value) {

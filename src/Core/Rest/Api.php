@@ -162,7 +162,7 @@ class Api
             $uri = $this->buildUrl($uri, $params);
         }
 
-        if (defined("ENV") and in_array(ENV,["dev","test"])) {
+        if (defined("DEBUG") and DEBUG) {
             $method = isset($opts[CURLOPT_CUSTOMREQUEST])?$opts[CURLOPT_CUSTOMREQUEST]:"POST";
             Logger::log($method." ".$uri,"request_curl");
         }

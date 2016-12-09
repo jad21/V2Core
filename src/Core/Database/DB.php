@@ -31,10 +31,15 @@ class DB
         "timeout" => 2006,
         "parse"   => 2000,
     ];
+    # @string name file name log
+    protected $filelog = "database";
     public function __construct($name = null)
     {
         $this->name = $name;
-        // $this->Connect();
+        if (defined("DEBUG") and DEBUG) {
+            $filelog = $this->filelog;
+            Logger::debug("__construct method db conection:{$this->name}", $filelog);
+        }
     }
     private function Connect()
     {
@@ -70,7 +75,7 @@ class DB
             $this->bConnected   = false;
             if (php_sapi_name() == "cli" and defined("DEBUG") and DEBUG) {
                 $msg = "\n+---   CloseConnection Database {$this->name}    ---+\n";
-                Logger::log($msg,"sql");
+                Logger::debug($msg, $this->filelog);
                 if (defined("DEBUG") and DEBUG) {
                     echo $msg;
                 }
@@ -105,9 +110,11 @@ class DB
                 return $this->Init($query, $parameters);
             }
             if (defined("DEBUG") and DEBUG) {
-                $filelog = "sql";
-                Logger::log("parameters:" . je($parameters), $filelog);
-                Logger::log("query:" . $query, $filelog);
+                $filelog = $this->filelog;
+                if (!empty($parameters)) {
+                    Logger::debug("parameters:" . je($parameters), $filelog);
+                }
+                Logger::debug("query:" . $query, $filelog);
             }
             # Prepare query
             $this->PDOstatement = $this->pdo->prepare($query);
@@ -340,8 +347,8 @@ class DB
     public function __destruct()
     {
         if (defined("DEBUG") and DEBUG) {
-            $filelog = "sql";
-            Logger::log("__destruct method db conection:{$this->name}", $filelog);
+            $filelog = $this->filelog;
+            Logger::debug("__destruct method db conection:{$this->name}", $filelog);
         }
         $this->CloseConnection();
     }
