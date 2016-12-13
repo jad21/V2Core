@@ -131,8 +131,10 @@ if (!function_exists('url')) {
             $host    = $_SERVER["SERVER_NAME"];
             $port    = $_SERVER["SERVER_PORT"] != 80 ? ":" . $_SERVER["SERVER_PORT"] : "";
             $urlbase = $_SERVER["REQUEST_URI"];
+            $urlbase = parse_url($urlbase)["path"];
             if (isset($_SERVER["PATH_INFO"])) {
                 $urlbase = strtr($urlbase, [$_SERVER["PATH_INFO"] => ""]);
+                $urlbase = parse_url($urlbase)["path"];
             }
             if ($url != "") {
                 $url = ltrim($url);
