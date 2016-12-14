@@ -25,5 +25,15 @@ trait Single
             throw new \Exception("Method static not exists => {$func} in ".get_class($self), 1);
         }
     }
+    public function __call($func, $arg)
+    {
+        $self = self::build();
+        if (method_exists($self,"_".$func)) {
+            return call_user_func_array(array($self, "_".$func), $arg);
+            
+        }else {
+            throw new \Exception("Method not exists => {$func} in ".get_class($self), 1);
+        }
+    }
     
 }

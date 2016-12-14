@@ -106,7 +106,9 @@ class ErrorHandler extends Exception
         $e->setSeverity($errno);
         $e->setFile($errfile);
         $e->setLine($errline);
-        self::exception_handler($e);
+        // self::exception_handler($e);
+        throw $e;
+        
     }
     public static function exception_handler($e)
     {
@@ -140,7 +142,13 @@ class ErrorHandler extends Exception
                 $response_str->setData("data", $data);
             }
         }
-        echo (string) $response_str->toJson();
+        
+        if (php_sapi_name() != "cli") {
+            echo (string) $response_str->toJson();
+        }else{
+            echo print_r($response_str->toArray(),1);
+        }
+        echo "\n";
         Logger::error($body_exception, "exceptions");
         die();
     }
