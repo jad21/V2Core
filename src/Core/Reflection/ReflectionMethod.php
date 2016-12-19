@@ -3,7 +3,7 @@ namespace V2\Core\Reflection;
 
 class ReflectionMethod extends ReflectionBase
 {
-    protected $_class
+    protected $_class;
     protected $_method_name = [];
     protected $_builded     = false;
 

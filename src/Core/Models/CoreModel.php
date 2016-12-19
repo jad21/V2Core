@@ -337,7 +337,7 @@ abstract class CoreModel
         if ($method == "set") {
             $this->{trim($attr)} = $arg[0];
             return $this;
-        } else if ($method == "get" and array_key_exists($attr, $this->product)) {
+        } else if ($method == "get" and array_key_exists($attr, $this->variables)) {
             return $this->{trim($attr)};
         }
         throw new Exception("bad method {$funs}");

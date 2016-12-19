@@ -96,6 +96,7 @@ class ErrorHandler extends Exception
                 $e->setFile($last_error['file']);
                 $e->setLine($last_error['line']);
                 self::render($e);
+                // throw $e;
                 die();
             }
         }
