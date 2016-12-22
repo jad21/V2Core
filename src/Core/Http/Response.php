@@ -13,7 +13,7 @@ class Response
     public function __construct($data, $format,$code=200)
     {
         if ($data instanceof View) {
-            return $this->result = $data;
+            return $this->result = $data->render();
         }else{
             switch ($format) {
                 case 'application/json':

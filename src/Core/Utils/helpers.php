@@ -126,8 +126,8 @@ if (!function_exists('url')) {
     function url($url = "")
     {
         if (isset($_SERVER)) {
-
-            $http    = $_SERVER['REQUEST_SCHEME'];
+            
+            $http    = isset($_SERVER['REQUEST_SCHEME'])?$_SERVER['REQUEST_SCHEME']:"http";
             $host    = $_SERVER["SERVER_NAME"];
             $port    = $_SERVER["SERVER_PORT"] != 80 ? ":" . $_SERVER["SERVER_PORT"] : "";
             $urlbase = $_SERVER["REQUEST_URI"];

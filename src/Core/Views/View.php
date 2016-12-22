@@ -34,7 +34,7 @@ class View
 		}
 	    $output = ob_get_contents();
 	    ob_end_clean();
-		$this->output = $output;
+		return $this->output = $output;
 	}
 
 	public function __toString()
