@@ -128,8 +128,7 @@ if (!function_exists('url')) {
         if (isset($_SERVER)) {
             
             $http    = isset($_SERVER['REQUEST_SCHEME'])?$_SERVER['REQUEST_SCHEME']:"http";
-            $host    = $_SERVER["SERVER_NAME"];
-            $port    = $_SERVER["SERVER_PORT"] != 80 ? ":" . $_SERVER["SERVER_PORT"] : "";
+            $host    = $_SERVER["HTTP_HOST"];
             $urlbase = $_SERVER["REQUEST_URI"];
             $urlbase = parse_url($urlbase)["path"];
             if (isset($_SERVER["PATH_INFO"])) {
@@ -143,7 +142,7 @@ if (!function_exists('url')) {
                     $url = substr($url, 1);
                 }
             }
-            return "{$http}://{$host}{$port}{$urlbase}{$url}";
+            return "{$http}://{$host}{$urlbase}{$url}";
         }
         return null;
     }
