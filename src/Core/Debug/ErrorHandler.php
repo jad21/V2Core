@@ -1,4 +1,3 @@
-
 <?php
 
 use V2\Core\Logs\Logger;
